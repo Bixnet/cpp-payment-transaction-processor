@@ -1,0 +1,16 @@
+name: Benchmark
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y cmake ninja-build libabsl-dev libbenchmark-dev
+      - run: cmake -S . -B build -G Ninja -DPAYMENT_BUILD_BENCHMARKS=ON -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build build --parallel
+      - run: ./build/payment_benchmarks --benchmark_min_time=0.2
